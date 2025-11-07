@@ -1,0 +1,21 @@
+# ============================================
+# Google Maps Scraper - Dependencies
+# Extração automatizada de dados do Google Maps
+# ============================================
+
+# Web Scraping & Browser Automation
+selenium==4.38.0
+
+# Data Processing & Export
+pandas==2.3.3
+
+# Clipboard Operations
+pyperclip==1.11.0
+
+# ============================================
+# Installation:
+#   pip install -r requirements.txt
+#
+# Usage:
+#   python scripts/run_scraper.py
+# ============================================
