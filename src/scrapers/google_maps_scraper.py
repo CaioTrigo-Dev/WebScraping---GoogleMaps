@@ -11,12 +11,12 @@ from ..utils.formatters import format_phone
 from ..utils.formatters import format_address
 from ..config.settings import WAIT_TIME, XPATH_BUTTON_PHONE, XPATH_BUTTON_ADDRESS,XPATH_CHECK_FIM_LIST
 
-
 class GoogleMapsScraper:
     def __init__(self, headless: bool = False):
         self.browser = self._init_browser(headless)
         self.wait_time = WAIT_TIME
         self.data_companys = []
+        self.data_table = pd.DataFrame(pd.read_csv('../../data/Row/establishment.csv'))
 
     def _init_browser(self, headless: bool = False) -> webdriver.Chrome:
         options = webdriver.ChromeOptions()
@@ -50,6 +50,7 @@ class GoogleMapsScraper:
             return True
         except NoSuchElementException:
             return False
+
     def extract_company(self):
         contents_company = self.browser.find_elements(By.XPATH, "//a[contains(@href , '/place/')]")
         for i, company in enumerate(contents_company):
@@ -66,12 +67,14 @@ class GoogleMapsScraper:
         name = self.extract_name(data)
         number_phone = self.extract_phone()
         address = self.extract_address()
+        for value in self.data_table['name']:
+            if name in value:
+                return {
+                    'name': name,
+                    'number_phone': number_phone,
+                    'address': address
+                }
 
-        return {
-            'name': name,
-            'number_phone': number_phone,
-            'address': address
-        }
     def click_company(self, data: Dict) -> None:
         self.browser.execute_script("arguments[0].scrollIntoView({block: 'center'});", data)
         time.sleep(1)
@@ -107,7 +110,7 @@ class GoogleMapsScraper:
             return 'Não Encontrado'
 
     def save_csv(self, output) -> None:
-        df_data = pd.DataFrame(self.data_companys)
+        df_data= pd.DataFrame(self.data_companys)
         df_data.to_csv(output, index=False)
         print('CSV salvo com sucesso!')
 

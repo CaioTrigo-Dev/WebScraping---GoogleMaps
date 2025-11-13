@@ -9,6 +9,7 @@ from src.scrapers.google_maps_scraper import GoogleMapsScraper
 def main():
     query = 'Hamburgueria'
     output = projeto_root / 'data' / 'processed' / 'hamburgueria.csv'
+    input = projeto_root / 'data' / 'Row' / 'establishment.csv'
 
     print(f'Buscando {query}')
 
