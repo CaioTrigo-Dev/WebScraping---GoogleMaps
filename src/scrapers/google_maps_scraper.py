@@ -4,19 +4,20 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from typing import List, Dict
+from typing import Dict
 import time
-import pandas as pd
-from ..utils.formatters import format_phone
-from ..utils.formatters import format_address
+from ..utils.formatters import format_phone, format_andress
+from ..utils.formatters import format_andress
 from ..config.settings import WAIT_TIME, XPATH_BUTTON_PHONE, XPATH_BUTTON_ADDRESS,XPATH_CHECK_FIM_LIST
+from scripts.clean_data import get_table_data, add_google_sheets
+
 
 class GoogleMapsScraper:
     def __init__(self, headless: bool = False):
         self.browser = self._init_browser(headless)
         self.wait_time = WAIT_TIME
         self.data_companys = []
-        self.data_table = pd.DataFrame(pd.read_csv('../../data/Row/establishment.csv'))
+        self.data_table_google_sheets = get_table_data()
 
     def _init_browser(self, headless: bool = False) -> webdriver.Chrome:
         options = webdriver.ChromeOptions()
@@ -57,23 +58,29 @@ class GoogleMapsScraper:
             print(f'Processando {i + 1}/{len(contents_company)}')
             try:
                 data = self.extract_data_company(company)
-                self.data_companys.append(data)
+                if data == None:
+                    continue
+                else:
+                    self.data_companys.append(data)
             except Exception as e:
                 print(e)
-
     def extract_data_company(self, data: Dict) -> dict:
         self.click_company(data)
 
         name = self.extract_name(data)
         number_phone = self.extract_phone()
-        address = self.extract_address()
-        for value in self.data_table['name']:
+        andress = self.extract_andress()
+        not_exist = True
+        for value in self.data_table_google_sheets['name']:
             if name in value:
-                return {
-                    'name': name,
-                    'number_phone': number_phone,
-                    'address': address
-                }
+                not_exist = False
+        if not_exist:
+            return {
+                'name': name,
+                'number_phone': number_phone,
+                'andress': andress
+            }
+        return None
 
     def click_company(self, data: Dict) -> None:
         self.browser.execute_script("arguments[0].scrollIntoView({block: 'center'});", data)
@@ -98,21 +105,20 @@ class GoogleMapsScraper:
         except:
             return None
 
-    def extract_address(self) -> str:
+    def extract_andress(self) -> str:
         try:
-            address = self.browser.find_element(By.XPATH, XPATH_BUTTON_ADDRESS)
-            address.click()
+            andress = self.browser.find_element(By.XPATH, XPATH_BUTTON_ADDRESS)
+            andress.click()
             time.sleep(0.5)
-            address_company = pyperclip.paste()
+            andress_company = pyperclip.paste()
             time.sleep(0.5)
-            return format_address(address_company)
+            return format_andress(andress_company)
         except:
             return 'Não Encontrado'
 
-    def save_csv(self, output) -> None:
-        df_data= pd.DataFrame(self.data_companys)
-        df_data.to_csv(output, index=False)
-        print('CSV salvo com sucesso!')
+    def save_csv(self) -> None:
+        add_google_sheets(self.data_companys)
+        print('Adicionado no Google Sheets!')
 
     def close(self):
         if hasattr(self, 'browser') and self.browser:
