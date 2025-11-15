@@ -9,7 +9,7 @@ import time
 from ..utils.formatters import format_phone, format_andress
 from ..utils.formatters import format_andress
 from ..config.settings import WAIT_TIME, XPATH_BUTTON_PHONE, XPATH_BUTTON_ADDRESS,XPATH_CHECK_FIM_LIST
-from scripts.clean_data import get_table_data, add_google_sheets
+from scripts.AuthGoogleSheets import get_table_data, add_google_sheets
 
 
 class GoogleMapsScraper:
