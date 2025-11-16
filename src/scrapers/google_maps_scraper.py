@@ -9,15 +9,14 @@ import time
 from ..utils.formatters import format_phone, format_andress
 from ..utils.formatters import format_andress
 from ..config.settings import WAIT_TIME, XPATH_BUTTON_PHONE, XPATH_BUTTON_ADDRESS,XPATH_CHECK_FIM_LIST
-from scripts.AuthGoogleSheets import get_table_data, add_google_sheets
-
+from scripts.AuthGoogleSheets import add_google_sheets
+from ..utils.validatorys import check_name_sheets
 
 class GoogleMapsScraper:
     def __init__(self, headless: bool = False):
         self.browser = self._init_browser(headless)
         self.wait_time = WAIT_TIME
         self.data_companys = []
-        self.data_table_google_sheets = get_table_data()
 
     def _init_browser(self, headless: bool = False) -> webdriver.Chrome:
         options = webdriver.ChromeOptions()
@@ -62,19 +61,16 @@ class GoogleMapsScraper:
                     continue
                 else:
                     self.data_companys.append(data)
+                    print(f'Adicionado a lista {len(self.data_companys)}/{len(contents_company)}')
             except Exception as e:
                 print(e)
-    def extract_data_company(self, data: Dict) -> dict:
+    def extract_data_company(self, data: Dict) -> dict[str, str | None] | None:
         self.click_company(data)
-
         name = self.extract_name(data)
-        number_phone = self.extract_phone()
-        andress = self.extract_andress()
-        not_exist = True
-        for value in self.data_table_google_sheets['name']:
-            if name in value:
-                not_exist = False
-        if not_exist:
+        check_name = check_name_sheets(name)
+        if check_name:
+            number_phone = self.extract_phone()
+            andress = self.extract_andress()
             return {
                 'name': name,
                 'number_phone': number_phone,
@@ -116,7 +112,7 @@ class GoogleMapsScraper:
         except:
             return 'Não Encontrado'
 
-    def save_csv(self) -> None:
+    def pull_csv(self) -> None:
         add_google_sheets(self.data_companys)
         print('Adicionado no Google Sheets!')
 

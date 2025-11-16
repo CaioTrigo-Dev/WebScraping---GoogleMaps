@@ -14,7 +14,7 @@ def main():
         scraper.search(query)
         scraper.scroll_browser()
         data = scraper.data_companys
-        scraper.save_csv()
+        scraper.pull_csv()
 
 
     print(f'Concluido, {len(data)} de Empresas Extraidas')

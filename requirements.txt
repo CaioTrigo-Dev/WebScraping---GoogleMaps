@@ -12,6 +12,12 @@ pandas==2.3.3
 # Clipboard Operations
 pyperclip==1.11.0
 
+#Serviço de Autenticação do Google
+gspread ==6.2.1
+
+google-auth ==2.41.1
+google-auth-oauthlib ==1.2.3
+
 # ============================================
 # Installation:
 #   pip install -r requirements.txt
