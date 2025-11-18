@@ -1,11 +1,11 @@
 import logging
 import sys
+from logging import DEBUG
 from pathlib import Path
 from datetime import datetime
 
 
-def setup_logger(name: str = "google_maps_scraper") -> logging.Logger:
-
+def setup_logger(name: str = "google_maps_scraper", level: str = DEBUG) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
@@ -22,4 +22,5 @@ def setup_logger(name: str = "google_maps_scraper") -> logging.Logger:
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     return logger
+
 
