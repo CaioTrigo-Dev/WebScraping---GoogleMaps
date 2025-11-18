@@ -10,7 +10,7 @@ from src.scrapers.google_maps_scraper import GoogleMapsScraper
 def main():
     query = input('Qual estabelecimento quer Buscar?  ')
     logger = setup_logger('Start', 'INFO')
-    logger.info(f'Buscando {query}')
+    logger.info(f'Buscando  {query}')
 
     with GoogleMapsScraper(headless=False) as scraper:
         scraper.search(query)
